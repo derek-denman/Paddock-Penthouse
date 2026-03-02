@@ -20,6 +20,7 @@ Milestone 3: scoring engine and settlement pipeline are in place with normalized
 Milestone 4: race weekend roster submission and pre-race picks are implemented with lock-time/salary-cap validation.
 Milestone 5: live pit-wall view and prediction loop are implemented with SSE snapshots and strategy-token spend/resolve flow.
 Milestone 6: Team AI Console is implemented with per-user chat history, local deterministic assistant, optional OpenAI path, and action guardrails.
+Milestone 7: infra is expanded to a multi-stack CDK baseline (network/data/auth/compute/web/observability) for AWS deployment.
 
 ## Operational Defaults
 - App should run locally even without cloud credentials.

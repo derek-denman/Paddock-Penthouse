@@ -19,5 +19,5 @@
 - [x] Milestone 4 (race weekend roster + pre-race picks UX and APIs)
 - [x] Milestone 5 (live pit-wall SSE + predictions + token economy hooks)
 - [x] Milestone 6 (Team AI Console, chat storage, guarded actions)
-- [ ] Milestone 7
+- [x] Milestone 7 (CDK multi-stack architecture and deploy hardening baseline)
 - [ ] Milestone 8
