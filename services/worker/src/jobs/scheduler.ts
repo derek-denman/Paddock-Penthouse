@@ -1,12 +1,16 @@
 import type { Prisma } from "@prisma/client";
 import type { NormalizedEvent } from "@p2p/common";
 
+import { readWorkerEnv } from "../config/env";
 import { prisma } from "../db/prisma";
+import { f1Provider } from "../providers/f1-provider";
+import type { RaceProvider } from "../providers/provider";
 import { buildDeterministicSettlement, calculateProvisionalLapTick } from "../scoring/engine";
 import { simProvider } from "../sim/sim-provider";
 
 const MAX_SIM_LAPS = 20;
 const settledEventIds = new Set<string>();
+let activeProvider: RaceProvider = simProvider;
 
 const persistNormalizedEvent = async (event: NormalizedEvent, sequence: number) => {
   await prisma.normalizedRaceEvent.create({
@@ -133,7 +137,7 @@ const applySettlement = async (eventId: string) => {
   });
 
   settledEventIds.add(eventId);
-  await simProvider.stop();
+  await activeProvider.stop();
 
   process.stdout.write(`[settlement] event=${event.key} finalized teams=${String(settlements.length)}\n`);
 };
@@ -178,6 +182,25 @@ const getOrStartLiveEvent = async () => {
   });
 };
 
+const chooseProvider = async (): Promise<RaceProvider> => {
+  const env = readWorkerEnv();
+
+  if (env.RACE_DATA_MODE === "LIVE_WITH_SIM_FALLBACK" && env.ENABLE_F1_LIVE) {
+    try {
+      const healthy = (await f1Provider.healthCheck?.()) ?? false;
+      if (healthy) {
+        process.stdout.write("[worker] F1 live provider selected\n");
+        return f1Provider;
+      }
+    } catch (error) {
+      process.stdout.write(`[worker] F1 provider unavailable, using SIM fallback: ${String(error)}\n`);
+    }
+  }
+
+  process.stdout.write("[worker] SIM provider selected\n");
+  return simProvider;
+};
+
 export const startScheduler = async () => {
   const event = await getOrStartLiveEvent();
 
@@ -186,9 +209,10 @@ export const startScheduler = async () => {
     return;
   }
 
-  process.stdout.write(`[worker] starting sim stream for event=${event.key}\n`);
+  activeProvider = await chooseProvider();
+  process.stdout.write(`[worker] starting ${activeProvider.key} stream for event=${event.key}\n`);
 
-  await simProvider.start(event.id, (normalizedEvent: NormalizedEvent) => {
+  await activeProvider.start(event.id, (normalizedEvent: NormalizedEvent) => {
     void handleSimEvent(normalizedEvent);
   });
 };

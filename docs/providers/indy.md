@@ -1,0 +1,3 @@
+# IndyCar Provider (Stub)
+
+Season 0 includes a provider stub for IndyCar. Interface exists, runtime is not implemented yet.

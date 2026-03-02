@@ -20,4 +20,4 @@
 - [x] Milestone 5 (live pit-wall SSE + predictions + token economy hooks)
 - [x] Milestone 6 (Team AI Console, chat storage, guarded actions)
 - [x] Milestone 7 (CDK multi-stack architecture and deploy hardening baseline)
-- [ ] Milestone 8
+- [x] Milestone 8 (F1 flag-gated provider with SIM fallback + provider stubs)
