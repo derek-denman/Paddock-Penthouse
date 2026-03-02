@@ -1,10 +1,9 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
 
-export type AuthContext = {
-  userId: string;
-  email: string;
-  role: "PLAYER" | "ADMIN";
-};
+import { verifyCognitoToken } from "../auth/cognito-token";
+import { verifyLocalToken } from "../auth/local-token";
+import { syncUserFromIdentity } from "../auth/user-sync";
+import { readApiEnv } from "../config/env";
 
 const parseAuthorizationHeader = (request: FastifyRequest): string | null => {
   const header = request.headers.authorization;
@@ -20,26 +19,34 @@ const parseAuthorizationHeader = (request: FastifyRequest): string | null => {
   return token;
 };
 
-export const authenticateLocal = async (request: FastifyRequest, reply: FastifyReply) => {
+export const authenticate = async (request: FastifyRequest, reply: FastifyReply) => {
   const token = parseAuthorizationHeader(request);
-
   if (!token) {
     return reply.unauthorized("missing auth token");
   }
 
-  // Milestone 0 local stub: token format local:<userId>:<email>:<role>
-  if (!token.startsWith("local:")) {
-    return reply.unauthorized("invalid local token format");
+  const env = readApiEnv();
+
+  try {
+    const identity =
+      env.AUTH_MODE === "cognito"
+        ? await verifyCognitoToken(token, env)
+        : await verifyLocalToken(token, env.LOCAL_JWT_SECRET);
+
+    const user = await syncUserFromIdentity(identity, env);
+    request.auth = user;
+  } catch (error) {
+    request.log.warn({ error }, "authentication failed");
+    return reply.unauthorized("invalid auth token");
+  }
+};
+
+export const requireAdmin = async (request: FastifyRequest, reply: FastifyReply) => {
+  if (!request.auth) {
+    return reply.unauthorized("not authenticated");
   }
 
-  const [, userId, email, role] = token.split(":");
-  if (!userId || !email || !role) {
-    return reply.unauthorized("invalid local token payload");
+  if (request.auth.role !== "ADMIN") {
+    return reply.forbidden("admin access required");
   }
-
-  (request as FastifyRequest & { auth?: AuthContext }).auth = {
-    userId,
-    email,
-    role: role === "ADMIN" ? "ADMIN" : "PLAYER"
-  };
 };

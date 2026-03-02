@@ -4,6 +4,7 @@ A fantasy motorsports + empire management web game with live pit-wall prediction
 
 ## Current Status
 - Milestone 0 scaffold is in place.
+- Milestone 1 auth foundation is in place (`/login`, `/auth/callback`, `/dashboard`, backend JWT verification, RBAC middleware).
 - Local runtime works with `AUTH_MODE=local` and `RACE_DATA_MODE=SIM`.
 - Production path is AWS-first (`AUTH_MODE=cognito` via Cognito + Google IdP).
 
@@ -111,10 +112,12 @@ This creates:
 ### Production/default path (`AUTH_MODE=cognito`)
 - Cognito User Pool issues JWTs.
 - Google social login is configured in Cognito Hosted UI.
+- Frontend login route redirects to Cognito Hosted UI; callback route validates OAuth `state` and restores session from `id_token`.
 
 ### Local fallback (`AUTH_MODE=local`)
 - Local token path allows app usage without cloud secrets.
 - Intended for development and CI only.
+- Local login page at `/login` calls `POST /auth/local/login` and stores the returned JWT in browser local storage.
 
 ## How to Become Admin
 - Set `OWNER_EMAIL` in `.env`.
@@ -133,6 +136,11 @@ This creates:
    - `COGNITO_DOMAIN`
    - `COGNITO_REDIRECT_URI`
    - `COGNITO_LOGOUT_URI`
+6. Frontend env vars for Hosted UI redirect:
+   - `VITE_AUTH_MODE=cognito`
+   - `VITE_COGNITO_DOMAIN`
+   - `VITE_COGNITO_CLIENT_ID`
+   - `VITE_COGNITO_REDIRECT_URI`
 
 ## AWS Deploy (CDK)
 

@@ -16,6 +16,7 @@ case "$COMMAND" in
   seed)
     corepack enable
     pnpm install
+    pnpm db:migrate:deploy
     pnpm db:seed
     ;;
   test)

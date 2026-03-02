@@ -8,7 +8,11 @@ const envSchema = z.object({
   REDIS_URL: z.string().min(1),
   AUTH_MODE: z.enum(["local", "cognito"]).default("local"),
   LOCAL_JWT_SECRET: z.string().min(12).default("local-dev-secret-change-me"),
-  OWNER_EMAIL: z.string().email().default("owner@example.com")
+  OWNER_EMAIL: z.string().email().default("owner@example.com"),
+  ENABLE_ADMIN_BOOTSTRAP: z.coerce.boolean().default(true),
+  COGNITO_REGION: z.string().optional(),
+  COGNITO_USER_POOL_ID: z.string().optional(),
+  COGNITO_APP_CLIENT_ID: z.string().optional()
 });
 
 export type ApiEnv = z.infer<typeof envSchema>;

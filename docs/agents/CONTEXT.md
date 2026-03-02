@@ -14,6 +14,7 @@
 
 ## Initial Milestone Focus
 Milestone 0: repo scaffolding, local dockerized dev, baseline API/UI, shared package, DB migration, CI.
+Milestone 1: auth and RBAC foundations are now in progress (local JWT login, Cognito token verification path, session callback UI).
 
 ## Operational Defaults
 - App should run locally even without cloud credentials.
