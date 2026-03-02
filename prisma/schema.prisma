@@ -28,8 +28,10 @@ enum Series {
 model User {
   id             String             @id @default(uuid())
   email          String             @unique
+  cognitoSub     String?            @unique
   displayName    String
   role           UserRole           @default(PLAYER)
+  lastLoginAt    DateTime?
   createdAt      DateTime           @default(now())
   updatedAt      DateTime           @updatedAt
   ownedLeagues   League[]           @relation("LeagueOwner")

@@ -31,7 +31,7 @@ services:
     image: node:22-alpine
     container_name: p2p-api
     working_dir: /workspace
-    command: sh -lc "corepack enable && pnpm install && pnpm --filter @p2p/api dev"
+    command: sh -lc "corepack enable && pnpm install && pnpm db:generate && pnpm db:migrate:deploy && pnpm --filter @p2p/api dev"
     env_file:
       - .env.example
     environment:
@@ -71,8 +71,11 @@ services:
     container_name: p2p-ui
     working_dir: /workspace
     command: sh -lc "corepack enable && pnpm install && pnpm --filter @p2p/ui dev"
+    env_file:
+      - .env.example
     environment:
       VITE_API_ORIGIN: http://localhost:4000
+      VITE_AUTH_MODE: local
     volumes:
       - ./:/workspace
     ports:

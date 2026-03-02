@@ -13,7 +13,7 @@
 
 ## Completion Log
 - [x] Milestone 0
-- [ ] Milestone 1
+- [ ] Milestone 1 (auth foundation started: JWT verification + login/session UI)
 - [ ] Milestone 2
 - [ ] Milestone 3
 - [ ] Milestone 4

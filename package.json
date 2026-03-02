@@ -14,6 +14,7 @@
     "test:e2e": "pnpm --filter @p2p/ui test:e2e",
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",
+    "db:migrate:deploy": "prisma migrate deploy",
     "db:seed": "tsx scripts/seed.ts"
   },
   "dependencies": {

@@ -1,9 +1,15 @@
+import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { Button, Container, Grid, Header, Label, Segment } from "semantic-ui-react";
 
 import { fetchHealth } from "../lib/api";
+import type { SessionUser } from "../lib/auth";
 
-export const LandingPage = () => {
+type LandingPageProps = {
+  user: SessionUser | null;
+};
+
+export const LandingPage = ({ user }: LandingPageProps) => {
   const { data, isLoading, error } = useQuery({
     queryKey: ["health"],
     queryFn: fetchHealth,
@@ -19,14 +25,20 @@ export const LandingPage = () => {
         <Header as="h1" style={{ marginTop: "1rem" }}>
           Paddock to Penthouse
         </Header>
-        <p>
-          Build your motorsport empire, dominate race-week fantasy, and win live pit-wall calls.
-        </p>
+        <p>Build your motorsport empire, dominate race-week fantasy, and win live pit-wall calls.</p>
         <Grid stackable columns={2}>
           <Grid.Column>
             <Header as="h3">Current Milestone</Header>
-            <p>Monorepo scaffold, local runtime, and baseline API/UI connectivity.</p>
-            <Button color="orange">Start Building</Button>
+            <p>Auth, accounts, and RBAC foundations are active.</p>
+            {user ? (
+              <Button as={Link} to="/dashboard" color="orange">
+                Open Dashboard
+              </Button>
+            ) : (
+              <Button as={Link} to="/login" color="orange">
+                Sign In
+              </Button>
+            )}
           </Grid.Column>
           <Grid.Column>
             <Header as="h3">API Status</Header>
