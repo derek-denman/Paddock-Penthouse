@@ -16,7 +16,7 @@
 - [x] Milestone 1 (auth foundation: JWT verification + login/session UI)
 - [x] Milestone 2 (core domain schema + league/team/admin APIs)
 - [x] Milestone 3 (normalized events + scoring engine + settlement)
-- [ ] Milestone 4
+- [x] Milestone 4 (race weekend roster + pre-race picks UX and APIs)
 - [ ] Milestone 5
 - [ ] Milestone 6
 - [ ] Milestone 7

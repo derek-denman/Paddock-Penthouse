@@ -9,6 +9,31 @@ const eventIdSchema = z.object({
 });
 
 export async function eventRoutes(app: FastifyInstance) {
+  app.get("/events", { preHandler: [authenticate] }, async (request, reply) => {
+    if (!request.auth) {
+      return reply.unauthorized("not authenticated");
+    }
+
+    const events = await prisma.event.findMany({
+      orderBy: {
+        startsAt: "asc"
+      },
+      include: {
+        season: {
+          select: {
+            id: true,
+            key: true,
+            name: true,
+            year: true,
+            series: true
+          }
+        }
+      }
+    });
+
+    return { events };
+  });
+
   app.get("/events/:eventId/weekend", { preHandler: [authenticate] }, async (request, reply) => {
     if (!request.auth) {
       return reply.unauthorized("not authenticated");
