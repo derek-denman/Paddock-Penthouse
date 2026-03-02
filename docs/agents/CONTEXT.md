@@ -19,6 +19,7 @@ Milestone 2: core game domain schema and player/admin CRUD endpoints are in plac
 Milestone 3: scoring engine and settlement pipeline are in place with normalized event persistence and leaderboard APIs.
 Milestone 4: race weekend roster submission and pre-race picks are implemented with lock-time/salary-cap validation.
 Milestone 5: live pit-wall view and prediction loop are implemented with SSE snapshots and strategy-token spend/resolve flow.
+Milestone 6: Team AI Console is implemented with per-user chat history, local deterministic assistant, optional OpenAI path, and action guardrails.
 
 ## Operational Defaults
 - App should run locally even without cloud credentials.

@@ -37,6 +37,9 @@ export const DashboardPage = ({ user, onLogout }: DashboardPageProps) => {
               <Button as={Link} to="/live" color="black" style={{ marginLeft: "0.5rem" }}>
                 Live Pit Wall
               </Button>
+              <Button as={Link} to="/ai-console" color="orange" style={{ marginLeft: "0.5rem" }}>
+                Team AI Console
+              </Button>
             </div>
             <div style={{ marginTop: "1rem" }}>
               <Button basic color="orange" onClick={onLogout}>

@@ -58,6 +58,11 @@ enum PredictionOutcome {
   INCORRECT
 }
 
+enum ChatRole {
+  USER
+  ASSISTANT
+}
+
 model User {
   id             String             @id @default(uuid())
   email          String             @unique
@@ -70,6 +75,7 @@ model User {
   ownedLeagues   League[]           @relation("LeagueOwner")
   memberships    LeagueMembership[]
   teams          PlayerTeam[]
+  aiMessages     TeamAiMessage[]
 }
 
 model League {
@@ -268,4 +274,14 @@ model PitWallPrediction {
   updatedAt      DateTime          @updatedAt
   team           PlayerTeam        @relation(fields: [teamId], references: [id], onDelete: Cascade)
   event          Event             @relation(fields: [eventId], references: [id], onDelete: Cascade)
+}
+
+model TeamAiMessage {
+  id        String   @id @default(uuid())
+  userId    String
+  role      ChatRole
+  content   String
+  actions   Json?
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

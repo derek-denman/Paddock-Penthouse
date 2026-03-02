@@ -9,6 +9,7 @@ A fantasy motorsports + empire management web game with live pit-wall prediction
 - Milestone 3 scoring foundation is in place (normalized race event persistence, provisional ticks, deterministic settlement, event leaderboard API).
 - Milestone 4 race weekend flow is in place (`/race-weekend`, roster submit, pre-race picks, salary-cap + lock checks).
 - Milestone 5 live pit-wall flow is in place (`/live`, SSE live stream, strategy-token predictions, resolution into scoring ledger).
+- Milestone 6 Team AI Console is in place (`/ai-console`, per-player chat history, guarded structured actions, optional OpenAI provider fallback to deterministic local assistant).
 - Local runtime works with `AUTH_MODE=local` and `RACE_DATA_MODE=SIM`.
 - Production path is AWS-first (`AUTH_MODE=cognito` via Cognito + Google IdP).
 

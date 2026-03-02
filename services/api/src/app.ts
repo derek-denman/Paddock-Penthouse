@@ -5,6 +5,7 @@ import Fastify from "fastify";
 import { readApiEnv } from "./config/env";
 import corePlugin from "./plugins/core";
 import { adminRoutes } from "./routes/admin";
+import { aiRoutes } from "./routes/ai";
 import { authRoutes } from "./routes/auth";
 import { eventRoutes } from "./routes/events";
 import { healthRoutes } from "./routes/health";
@@ -30,6 +31,7 @@ export const buildApp = () => {
   app.register(rootRoutes);
   app.register(healthRoutes);
   app.register(authRoutes);
+  app.register(aiRoutes);
   app.register(eventRoutes);
   app.register(leagueRoutes);
   app.register(playerRoutes);
