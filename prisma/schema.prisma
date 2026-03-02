@@ -25,6 +25,33 @@ enum Series {
   IMSA
 }
 
+enum EventStatus {
+  SCHEDULED
+  LIVE
+  FINAL
+}
+
+enum StaffRole {
+  TEAM_PRINCIPAL
+  RACE_ENGINEER
+  STRATEGIST
+  PIT_CREW_COACH
+  TALENT_SCOUT
+  LEGAL_COMPLIANCE
+}
+
+enum ContractStatus {
+  ACTIVE
+  EXPIRED
+  TERMINATED
+}
+
+enum RosterSlot {
+  STARTER
+  BENCH
+  RESERVE
+}
+
 model User {
   id             String             @id @default(uuid())
   email          String             @unique
@@ -36,6 +63,7 @@ model User {
   updatedAt      DateTime           @updatedAt
   ownedLeagues   League[]           @relation("LeagueOwner")
   memberships    LeagueMembership[]
+  teams          PlayerTeam[]
 }
 
 model League {
@@ -47,6 +75,7 @@ model League {
   createdAt    DateTime           @default(now())
   updatedAt    DateTime           @updatedAt
   memberships  LeagueMembership[]
+  teams        PlayerTeam[]
 }
 
 model LeagueMembership {
@@ -73,14 +102,133 @@ model Season {
 }
 
 model Event {
-  id            String   @id @default(uuid())
-  key           String   @unique
-  name          String
-  seasonId      String
-  series        Series
-  startsAt      DateTime
-  isCrownJewel  Boolean  @default(false)
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-  season        Season   @relation(fields: [seasonId], references: [id], onDelete: Cascade)
+  id                String             @id @default(uuid())
+  key               String             @unique
+  name              String
+  seasonId          String
+  series            Series
+  status            EventStatus        @default(SCHEDULED)
+  startsAt          DateTime
+  isCrownJewel      Boolean            @default(false)
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  season            Season             @relation(fields: [seasonId], references: [id], onDelete: Cascade)
+  rosterSubmissions RosterSubmission[]
+  preRacePicks      PreRacePick[]
+  scoreLedgers      ScoreLedger[]
+}
+
+model PlayerTeam {
+  id                String             @id @default(uuid())
+  name              String
+  userId            String
+  leagueId          String
+  funds             Int                @default(1000000)
+  strategyTokens    Int                @default(5)
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  user              User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  league            League             @relation(fields: [leagueId], references: [id], onDelete: Cascade)
+  staffMembers      StaffMember[]
+  driverContracts   DriverContract[]
+  upgrades          TeamUpgrade[]
+  rosterSubmissions RosterSubmission[]
+  preRacePicks      PreRacePick[]
+  scoreLedgers      ScoreLedger[]
+
+  @@unique([leagueId, userId])
+}
+
+model StaffMember {
+  id           String       @id @default(uuid())
+  teamId       String
+  name         String
+  role         StaffRole
+  salary       Int
+  level        Int          @default(1)
+  contractEnds DateTime?
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+  team         PlayerTeam   @relation(fields: [teamId], references: [id], onDelete: Cascade)
+}
+
+model DriverContract {
+  id         String         @id @default(uuid())
+  teamId      String
+  driverName String
+  series     Series
+  salary     Int
+  status     ContractStatus @default(ACTIVE)
+  startAt    DateTime       @default(now())
+  endAt      DateTime?
+  buyoutFee  Int?
+  createdAt  DateTime       @default(now())
+  updatedAt  DateTime       @updatedAt
+  team       PlayerTeam     @relation(fields: [teamId], references: [id], onDelete: Cascade)
+}
+
+model TeamUpgrade {
+  id        String     @id @default(uuid())
+  teamId    String
+  key       String
+  name      String
+  level     Int        @default(1)
+  cost      Int
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  team      PlayerTeam @relation(fields: [teamId], references: [id], onDelete: Cascade)
+
+  @@unique([teamId, key])
+}
+
+model RosterSubmission {
+  id          String       @id @default(uuid())
+  teamId       String
+  eventId      String
+  salaryCap    Int
+  submittedAt  DateTime    @default(now())
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+  team         PlayerTeam  @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  event        Event       @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  rosterItems  RosterItem[]
+
+  @@unique([teamId, eventId])
+}
+
+model RosterItem {
+  id            String           @id @default(uuid())
+  submissionId  String
+  slot          RosterSlot
+  driverName    String
+  salary        Int
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+  submission    RosterSubmission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+}
+
+model PreRacePick {
+  id         String     @id @default(uuid())
+  teamId      String
+  eventId     String
+  pickType    String
+  pickValue   String
+  confidence  Int        @default(1)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  team        PlayerTeam @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  event       Event      @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  @@unique([teamId, eventId, pickType])
+}
+
+model ScoreLedger {
+  id         String     @id @default(uuid())
+  teamId      String
+  eventId     String
+  points      Int
+  reason      String
+  createdAt   DateTime   @default(now())
+  team        PlayerTeam @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  event       Event      @relation(fields: [eventId], references: [id], onDelete: Cascade)
 }

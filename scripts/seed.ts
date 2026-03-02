@@ -73,7 +73,66 @@ async function main() {
     }
   });
 
-  process.stdout.write("Seed completed: admin, sample league, sample season, crown jewel events.\n");
+  const team = await prisma.playerTeam.upsert({
+    where: {
+      leagueId_userId: {
+        leagueId: league.id,
+        userId: owner.id
+      }
+    },
+    update: {
+      name: "Founders GP",
+      funds: 1000000,
+      strategyTokens: 5
+    },
+    create: {
+      name: "Founders GP",
+      leagueId: league.id,
+      userId: owner.id,
+      funds: 1000000,
+      strategyTokens: 5
+    }
+  });
+
+  await prisma.staffMember.deleteMany({ where: { teamId: team.id } });
+  await prisma.staffMember.createMany({
+    data: [
+      {
+        teamId: team.id,
+        name: "Alex Mercer",
+        role: "TEAM_PRINCIPAL",
+        salary: 120000
+      },
+      {
+        teamId: team.id,
+        name: "Mika Rao",
+        role: "STRATEGIST",
+        salary: 95000
+      }
+    ]
+  });
+
+  await prisma.driverContract.deleteMany({ where: { teamId: team.id } });
+  await prisma.driverContract.createMany({
+    data: [
+      {
+        teamId: team.id,
+        driverName: "Driver A",
+        series: "F1",
+        salary: 180000,
+        status: "ACTIVE"
+      },
+      {
+        teamId: team.id,
+        driverName: "Driver B",
+        series: "F1",
+        salary: 160000,
+        status: "ACTIVE"
+      }
+    ]
+  });
+
+  process.stdout.write("Seed completed: admin, league, season, crown jewels, and starter team assets.\n");
 }
 
 main()

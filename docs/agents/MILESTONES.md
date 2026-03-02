@@ -13,8 +13,8 @@
 
 ## Completion Log
 - [x] Milestone 0
-- [ ] Milestone 1 (auth foundation started: JWT verification + login/session UI)
-- [ ] Milestone 2
+- [x] Milestone 1 (auth foundation: JWT verification + login/session UI)
+- [x] Milestone 2 (core domain schema + league/team/admin APIs)
 - [ ] Milestone 3
 - [ ] Milestone 4
 - [ ] Milestone 5

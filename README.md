@@ -5,6 +5,7 @@ A fantasy motorsports + empire management web game with live pit-wall prediction
 ## Current Status
 - Milestone 0 scaffold is in place.
 - Milestone 1 auth foundation is in place (`/login`, `/auth/callback`, `/dashboard`, backend JWT verification, RBAC middleware).
+- Milestone 2 domain foundation is in place (league create/join, team staffing/contracts, admin season/event tools).
 - Local runtime works with `AUTH_MODE=local` and `RACE_DATA_MODE=SIM`.
 - Production path is AWS-first (`AUTH_MODE=cognito` via Cognito + Google IdP).
 
