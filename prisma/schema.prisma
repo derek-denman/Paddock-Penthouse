@@ -1,0 +1,84 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  PLAYER
+  ADMIN
+}
+
+enum LeagueRole {
+  OWNER
+  MEMBER
+}
+
+enum Series {
+  F1
+  NASCAR
+  INDYCAR
+  WEC
+  IMSA
+}
+
+model User {
+  id             String             @id @default(uuid())
+  email          String             @unique
+  displayName    String
+  role           UserRole           @default(PLAYER)
+  createdAt      DateTime           @default(now())
+  updatedAt      DateTime           @updatedAt
+  ownedLeagues   League[]           @relation("LeagueOwner")
+  memberships    LeagueMembership[]
+}
+
+model League {
+  id           String             @id @default(uuid())
+  name         String
+  code         String             @unique
+  ownerId      String
+  owner        User               @relation("LeagueOwner", fields: [ownerId], references: [id], onDelete: Cascade)
+  createdAt    DateTime           @default(now())
+  updatedAt    DateTime           @updatedAt
+  memberships  LeagueMembership[]
+}
+
+model LeagueMembership {
+  id        String     @id @default(uuid())
+  leagueId  String
+  userId    String
+  role      LeagueRole @default(MEMBER)
+  joinedAt  DateTime   @default(now())
+  league    League     @relation(fields: [leagueId], references: [id], onDelete: Cascade)
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([leagueId, userId])
+}
+
+model Season {
+  id        String   @id @default(uuid())
+  key       String   @unique
+  name      String
+  year      Int
+  series    Series
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  events    Event[]
+}
+
+model Event {
+  id            String   @id @default(uuid())
+  key           String   @unique
+  name          String
+  seasonId      String
+  series        Series
+  startsAt      DateTime
+  isCrownJewel  Boolean  @default(false)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  season        Season   @relation(fields: [seasonId], references: [id], onDelete: Cascade)
+}
