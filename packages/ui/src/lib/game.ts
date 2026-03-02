@@ -97,6 +97,22 @@ export type EventSummary = {
   };
 };
 
+export type EventLeaderboard = {
+  event: {
+    id: string;
+    name: string;
+    key: string;
+    status: "SCHEDULED" | "LIVE" | "FINAL";
+  };
+  leaderboard: Array<{
+    teamId: string;
+    teamName: string;
+    manager: string;
+    managerEmail: string;
+    points: number;
+  }>;
+};
+
 export const fetchPlayerState = async (): Promise<PlayerState> => {
   const response = await fetch(`${appConfig.apiOrigin}/player/state`, {
     headers: authHeaders()
@@ -141,6 +157,59 @@ export const submitPicks = async (
   });
 
   return parseResponse(response);
+};
+
+export const fetchEventLeaderboard = async (eventId: string): Promise<EventLeaderboard> => {
+  const response = await fetch(`${appConfig.apiOrigin}/events/${eventId}/leaderboard`, {
+    headers: authHeaders()
+  });
+
+  return parseResponse<EventLeaderboard>(response);
+};
+
+export const submitPitWallPrediction = async (
+  eventId: string,
+  teamId: string,
+  predictionType: string,
+  target: string,
+  tokenCost?: number
+) => {
+  const response = await fetch(`${appConfig.apiOrigin}/events/${eventId}/pitwall/predict`, {
+    method: "POST",
+    headers: authHeaders(),
+    body: JSON.stringify({ teamId, predictionType, target, tokenCost })
+  });
+
+  return parseResponse(response);
+};
+
+export const fetchPitWallPredictions = async (eventId: string) => {
+  const response = await fetch(`${appConfig.apiOrigin}/events/${eventId}/pitwall/predictions`, {
+    headers: authHeaders()
+  });
+
+  return parseResponse<{
+    predictions: Array<{
+      id: string;
+      predictionType: string;
+      target: string;
+      tokenCost: number;
+      outcome: "PENDING" | "CORRECT" | "INCORRECT";
+      createdAt: string;
+      resolvedAt: string | null;
+    }>;
+  }>(response);
+};
+
+export const liveStreamUrl = (eventId: string): string => {
+  const token = readToken();
+  if (!token) {
+    throw new Error("missing auth token");
+  }
+
+  const url = new URL(`${appConfig.apiOrigin}/events/${eventId}/live-stream`);
+  url.searchParams.set("token", token);
+  return url.toString();
 };
 
 export const createLeague = async (name: string, code: string) => {

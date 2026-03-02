@@ -34,6 +34,9 @@ export const DashboardPage = ({ user, onLogout }: DashboardPageProps) => {
               <Button as={Link} to="/race-weekend" color="blue" style={{ marginLeft: "0.5rem" }}>
                 Race Weekend
               </Button>
+              <Button as={Link} to="/live" color="black" style={{ marginLeft: "0.5rem" }}>
+                Live Pit Wall
+              </Button>
             </div>
             <div style={{ marginTop: "1rem" }}>
               <Button basic color="orange" onClick={onLogout}>
