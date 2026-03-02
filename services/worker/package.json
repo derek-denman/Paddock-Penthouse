@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@p2p/common": "workspace:*",
+    "@prisma/client": "^6.4.1",
     "dotenv": "^16.4.7",
     "zod": "^3.24.2"
   },

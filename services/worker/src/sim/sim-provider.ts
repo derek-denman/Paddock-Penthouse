@@ -5,12 +5,20 @@ import type { RaceProvider } from "../providers/provider";
 let timer: NodeJS.Timeout | null = null;
 let lap = 0;
 
+const readTickMs = (): number => {
+  const parsed = Number(process.env.WORKER_TICK_MS ?? "3000");
+  return Number.isFinite(parsed) && parsed > 0 ? parsed : 3000;
+};
+
 export const simProvider: RaceProvider = {
   key: "SIM",
   start: async (eventId, emit) => {
     if (timer) {
       return;
     }
+
+    lap = 0;
+    const tickMs = readTickMs();
 
     timer = setInterval(() => {
       lap += 1;
@@ -25,12 +33,14 @@ export const simProvider: RaceProvider = {
       };
 
       emit(event);
-    }, 3000);
+    }, tickMs);
   },
   stop: async () => {
     if (timer) {
       clearInterval(timer);
       timer = null;
     }
+
+    lap = 0;
   }
 };

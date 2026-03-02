@@ -6,6 +6,7 @@ import { readApiEnv } from "./config/env";
 import corePlugin from "./plugins/core";
 import { adminRoutes } from "./routes/admin";
 import { authRoutes } from "./routes/auth";
+import { eventRoutes } from "./routes/events";
 import { healthRoutes } from "./routes/health";
 import { leagueRoutes } from "./routes/leagues";
 import { playerRoutes } from "./routes/player";
@@ -29,6 +30,7 @@ export const buildApp = () => {
   app.register(rootRoutes);
   app.register(healthRoutes);
   app.register(authRoutes);
+  app.register(eventRoutes);
   app.register(leagueRoutes);
   app.register(playerRoutes);
   app.register(adminRoutes);
