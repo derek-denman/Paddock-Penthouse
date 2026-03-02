@@ -163,6 +163,9 @@ importers:
       '@p2p/common':
         specifier: workspace:*
         version: link:../../packages/common
+      '@prisma/client':
+        specifier: ^6.4.1
+        version: 6.19.2(prisma@6.19.2(typescript@5.9.3))(typescript@5.9.3)
       dotenv:
         specifier: ^16.4.7
         version: 16.6.1

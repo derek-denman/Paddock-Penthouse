@@ -16,6 +16,7 @@
 Milestone 0: repo scaffolding, local dockerized dev, baseline API/UI, shared package, DB migration, CI.
 Milestone 1: auth and RBAC foundations are in place (local JWT login, Cognito token verification path, session callback UI).
 Milestone 2: core game domain schema and player/admin CRUD endpoints are in place for leagues, teams, staffing, and contracts.
+Milestone 3: scoring engine and settlement pipeline are in place with normalized event persistence and leaderboard APIs.
 
 ## Operational Defaults
 - App should run locally even without cloud credentials.

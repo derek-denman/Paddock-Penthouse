@@ -116,6 +116,7 @@ model Event {
   rosterSubmissions RosterSubmission[]
   preRacePicks      PreRacePick[]
   scoreLedgers      ScoreLedger[]
+  normalizedEvents  NormalizedRaceEvent[]
 }
 
 model PlayerTeam {
@@ -231,4 +232,17 @@ model ScoreLedger {
   createdAt   DateTime   @default(now())
   team        PlayerTeam @relation(fields: [teamId], references: [id], onDelete: Cascade)
   event       Event      @relation(fields: [eventId], references: [id], onDelete: Cascade)
+}
+
+model NormalizedRaceEvent {
+  id        String   @id @default(uuid())
+  eventId   String
+  sequence  Int
+  type      String
+  timestamp DateTime
+  payload   Json
+  createdAt DateTime @default(now())
+  event     Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  @@unique([eventId, sequence])
 }

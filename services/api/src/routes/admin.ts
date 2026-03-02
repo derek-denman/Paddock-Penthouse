@@ -28,6 +28,20 @@ const userIdParamSchema = z.object({
   userId: z.string().uuid()
 });
 
+const eventIdParamSchema = z.object({
+  eventId: z.string().uuid()
+});
+
+const overrideResultsSchema = z.object({
+  entries: z.array(
+    z.object({
+      teamId: z.string().uuid(),
+      points: z.coerce.number().int(),
+      reason: z.string().min(3).max(120).default("ADMIN_OVERRIDE")
+    })
+  )
+});
+
 export async function adminRoutes(app: FastifyInstance) {
   const adminGuards = { preHandler: [authenticate, requireAdmin] };
 
@@ -100,5 +114,56 @@ export async function adminRoutes(app: FastifyInstance) {
     });
 
     return user;
+  });
+
+  app.post("/admin/events/:eventId/rescore", adminGuards, async (request) => {
+    const params = eventIdParamSchema.parse(request.params);
+
+    await prisma.$transaction([
+      prisma.scoreLedger.deleteMany({
+        where: { eventId: params.eventId }
+      }),
+      prisma.normalizedRaceEvent.deleteMany({
+        where: { eventId: params.eventId }
+      }),
+      prisma.event.update({
+        where: { id: params.eventId },
+        data: { status: "SCHEDULED" }
+      })
+    ]);
+
+    return {
+      rescoreQueued: true,
+      eventId: params.eventId
+    };
+  });
+
+  app.post("/admin/events/:eventId/override-results", adminGuards, async (request) => {
+    const params = eventIdParamSchema.parse(request.params);
+    const body = overrideResultsSchema.parse(request.body ?? {});
+
+    await prisma.$transaction(async (tx) => {
+      for (const entry of body.entries) {
+        await tx.scoreLedger.create({
+          data: {
+            eventId: params.eventId,
+            teamId: entry.teamId,
+            points: entry.points,
+            reason: `ADMIN_OVERRIDE:${entry.reason}`
+          }
+        });
+      }
+
+      await tx.event.update({
+        where: { id: params.eventId },
+        data: { status: "FINAL" }
+      });
+    });
+
+    return {
+      overridden: true,
+      eventId: params.eventId,
+      entries: body.entries.length
+    };
   });
 }
