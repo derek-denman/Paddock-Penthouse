@@ -113,6 +113,19 @@ export type EventLeaderboard = {
   }>;
 };
 
+export type AiHistoryMessage = {
+  id: string;
+  role: "USER" | "ASSISTANT";
+  content: string;
+  actions: Array<{
+    type: string;
+    summary: string;
+    payload: Record<string, unknown>;
+    allowed: boolean;
+  }> | null;
+  createdAt: string;
+};
+
 export const fetchPlayerState = async (): Promise<PlayerState> => {
   const response = await fetch(`${appConfig.apiOrigin}/player/state`, {
     headers: authHeaders()
@@ -210,6 +223,34 @@ export const liveStreamUrl = (eventId: string): string => {
   const url = new URL(`${appConfig.apiOrigin}/events/${eventId}/live-stream`);
   url.searchParams.set("token", token);
   return url.toString();
+};
+
+export const fetchAiHistory = async (): Promise<AiHistoryMessage[]> => {
+  const response = await fetch(`${appConfig.apiOrigin}/ai/history`, {
+    headers: authHeaders()
+  });
+
+  const payload = await parseResponse<{ messages: AiHistoryMessage[] }>(response);
+  return payload.messages;
+};
+
+export const sendAiMessage = async (message: string) => {
+  const response = await fetch(`${appConfig.apiOrigin}/ai/chat`, {
+    method: "POST",
+    headers: authHeaders(),
+    body: JSON.stringify({ message })
+  });
+
+  return parseResponse<{
+    provider: "local" | "openai";
+    message: string;
+    actions: Array<{
+      type: string;
+      summary: string;
+      payload: Record<string, unknown>;
+      allowed: boolean;
+    }>;
+  }>(response);
 };
 
 export const createLeague = async (name: string, code: string) => {

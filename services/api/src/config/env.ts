@@ -12,7 +12,11 @@ const envSchema = z.object({
   ENABLE_ADMIN_BOOTSTRAP: z.coerce.boolean().default(true),
   COGNITO_REGION: z.string().optional(),
   COGNITO_USER_POOL_ID: z.string().optional(),
-  COGNITO_APP_CLIENT_ID: z.string().optional()
+  COGNITO_APP_CLIENT_ID: z.string().optional(),
+  AI_PROVIDER: z.enum(["local", "openai"]).default("local"),
+  OPENAI_API_KEY: z.string().optional(),
+  OPENAI_MODEL: z.string().default("gpt-4o-mini"),
+  AI_RATE_LIMIT_PER_MINUTE: z.coerce.number().int().positive().default(20)
 });
 
 export type ApiEnv = z.infer<typeof envSchema>;

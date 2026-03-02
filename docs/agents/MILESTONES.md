@@ -18,6 +18,6 @@
 - [x] Milestone 3 (normalized events + scoring engine + settlement)
 - [x] Milestone 4 (race weekend roster + pre-race picks UX and APIs)
 - [x] Milestone 5 (live pit-wall SSE + predictions + token economy hooks)
-- [ ] Milestone 6
+- [x] Milestone 6 (Team AI Console, chat storage, guarded actions)
 - [ ] Milestone 7
 - [ ] Milestone 8
