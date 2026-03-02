@@ -161,6 +161,9 @@ pnpm cdk bootstrap
 
 ```bash
 cd infra
+# Optional config overrides:
+# export APP_PREFIX=paddock-penthouse
+# export COGNITO_DOMAIN_PREFIX=paddock-penthouse-dev-yourorg
 DEPLOY_ENV=dev pnpm cdk deploy
 ```
 
@@ -170,6 +173,14 @@ DEPLOY_ENV=dev pnpm cdk deploy
 cd infra
 DEPLOY_ENV=prod pnpm cdk deploy
 ```
+
+### Stack Topology
+- `*-network-*`: VPC and subnet layout
+- `*-data-*`: Postgres (RDS), Redis (ElastiCache), DB secret and security groups
+- `*-auth-*`: Cognito user pool/client/domain
+- `*-compute-*`: ECS cluster and Fargate service scaffolding for API + worker
+- `*-web-*`: S3 + CloudFront for frontend hosting
+- `*-observability-*`: log groups and baseline alarm resources
 
 ## Rules and Gameplay Docs
 - Scoring tables: `docs/rules/scoring.md`
