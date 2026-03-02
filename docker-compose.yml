@@ -1,0 +1,84 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: p2p-postgres
+    environment:
+      POSTGRES_DB: paddock
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d paddock"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  redis:
+    image: redis:7-alpine
+    container_name: p2p-redis
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  api:
+    image: node:22-alpine
+    container_name: p2p-api
+    working_dir: /workspace
+    command: sh -lc "corepack enable && pnpm install && pnpm --filter @p2p/api dev"
+    env_file:
+      - .env.example
+    environment:
+      API_PORT: 4000
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/paddock
+      REDIS_URL: redis://redis:6379
+    volumes:
+      - ./:/workspace
+    ports:
+      - "4000:4000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  worker:
+    image: node:22-alpine
+    container_name: p2p-worker
+    working_dir: /workspace
+    command: sh -lc "corepack enable && pnpm install && pnpm --filter @p2p/worker dev"
+    env_file:
+      - .env.example
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/paddock
+      REDIS_URL: redis://redis:6379
+    volumes:
+      - ./:/workspace
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  ui:
+    image: node:22-alpine
+    container_name: p2p-ui
+    working_dir: /workspace
+    command: sh -lc "corepack enable && pnpm install && pnpm --filter @p2p/ui dev"
+    environment:
+      VITE_API_ORIGIN: http://localhost:4000
+    volumes:
+      - ./:/workspace
+    ports:
+      - "5173:5173"
+    depends_on:
+      - api
+
+volumes:
+  postgres_data:

@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+COMMAND="${1:-}"
+
+case "$COMMAND" in
+  up)
+    docker compose up -d --build
+    ;;
+  down)
+    docker compose down
+    ;;
+  logs)
+    docker compose logs -f --tail=100
+    ;;
+  seed)
+    corepack enable
+    pnpm install
+    pnpm db:seed
+    ;;
+  test)
+    corepack enable
+    pnpm install
+    pnpm lint && pnpm typecheck && pnpm test
+    ;;
+  *)
+    echo "Usage: ./scripts/dev {up|down|logs|seed|test}"
+    exit 1
+    ;;
+esac

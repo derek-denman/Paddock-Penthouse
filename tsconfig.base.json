@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "allowSyntheticDefaultImports": true,
+    "forceConsistentCasingInFileNames": true,
+    "types": ["node"],
+    "baseUrl": ".",
+    "paths": {
+      "@p2p/common": ["packages/common/src/index.ts"],
+      "@p2p/common/*": ["packages/common/src/*"]
+    }
+  }
+}
