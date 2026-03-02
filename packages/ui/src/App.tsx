@@ -6,7 +6,9 @@ import { clearToken, fetchSessionUser, type SessionUser } from "./lib/auth";
 import { AuthCallbackPage } from "./pages/AuthCallbackPage";
 import { DashboardPage } from "./pages/DashboardPage";
 import { LandingPage } from "./pages/LandingPage";
+import { LeaguePage } from "./pages/LeaguePage";
 import { LoginPage } from "./pages/LoginPage";
+import { TeamPage } from "./pages/TeamPage";
 
 const queryClient = new QueryClient();
 
@@ -48,6 +50,8 @@ const AppRoutes = () => {
         path="/dashboard"
         element={user ? <DashboardPage user={user} onLogout={handleLogout} /> : <Navigate to="/login" replace />}
       />
+      <Route path="/league" element={user ? <LeaguePage /> : <Navigate to="/login" replace />} />
+      <Route path="/team" element={user ? <TeamPage /> : <Navigate to="/login" replace />} />
     </Routes>
   );
 };
