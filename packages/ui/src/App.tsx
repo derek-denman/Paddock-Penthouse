@@ -7,6 +7,7 @@ import { AuthCallbackPage } from "./pages/AuthCallbackPage";
 import { DashboardPage } from "./pages/DashboardPage";
 import { LandingPage } from "./pages/LandingPage";
 import { LeaguePage } from "./pages/LeaguePage";
+import { LivePitWallPage } from "./pages/LivePitWallPage";
 import { LoginPage } from "./pages/LoginPage";
 import { RaceWeekendPage } from "./pages/RaceWeekendPage";
 import { TeamPage } from "./pages/TeamPage";
@@ -54,6 +55,7 @@ const AppRoutes = () => {
       <Route path="/league" element={user ? <LeaguePage /> : <Navigate to="/login" replace />} />
       <Route path="/team" element={user ? <TeamPage /> : <Navigate to="/login" replace />} />
       <Route path="/race-weekend" element={user ? <RaceWeekendPage /> : <Navigate to="/login" replace />} />
+      <Route path="/live" element={user ? <LivePitWallPage /> : <Navigate to="/login" replace />} />
     </Routes>
   );
 };

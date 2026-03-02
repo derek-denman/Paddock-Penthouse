@@ -17,7 +17,7 @@
 - [x] Milestone 2 (core domain schema + league/team/admin APIs)
 - [x] Milestone 3 (normalized events + scoring engine + settlement)
 - [x] Milestone 4 (race weekend roster + pre-race picks UX and APIs)
-- [ ] Milestone 5
+- [x] Milestone 5 (live pit-wall SSE + predictions + token economy hooks)
 - [ ] Milestone 6
 - [ ] Milestone 7
 - [ ] Milestone 8

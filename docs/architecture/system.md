@@ -13,5 +13,6 @@
 3. Worker persists normalized events to `NormalizedRaceEvent`.
 4. Scoring engine applies provisional lap ticks and writes `ScoreLedger`.
 5. On race completion, settlement writes official score entries (crown jewel rules included).
-6. API serves dashboards/standings and pushes live updates.
-7. AI console reads player state and emits advisory action proposals.
+6. API serves dashboards/standings and pushes live updates (SSE snapshots in MVP).
+7. Pit-wall predictions spend strategy tokens and resolve back into score ledger.
+8. AI console reads player state and emits advisory action proposals.

@@ -19,22 +19,25 @@ const parseAuthorizationHeader = (request: FastifyRequest): string | null => {
   return token;
 };
 
+export const authenticateToken = async (token: string) => {
+  const env = readApiEnv();
+
+  const identity =
+    env.AUTH_MODE === "cognito"
+      ? await verifyCognitoToken(token, env)
+      : await verifyLocalToken(token, env.LOCAL_JWT_SECRET);
+
+  return syncUserFromIdentity(identity, env);
+};
+
 export const authenticate = async (request: FastifyRequest, reply: FastifyReply) => {
   const token = parseAuthorizationHeader(request);
   if (!token) {
     return reply.unauthorized("missing auth token");
   }
 
-  const env = readApiEnv();
-
   try {
-    const identity =
-      env.AUTH_MODE === "cognito"
-        ? await verifyCognitoToken(token, env)
-        : await verifyLocalToken(token, env.LOCAL_JWT_SECRET);
-
-    const user = await syncUserFromIdentity(identity, env);
-    request.auth = user;
+    request.auth = await authenticateToken(token);
   } catch (error) {
     request.log.warn({ error }, "authentication failed");
     return reply.unauthorized("invalid auth token");

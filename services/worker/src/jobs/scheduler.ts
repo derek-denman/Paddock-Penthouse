@@ -41,6 +41,52 @@ const applyProvisionalTick = async (eventId: string, lap: number) => {
   });
 };
 
+const resolvePendingPredictions = async (eventId: string, lap: number) => {
+  if (lap <= 0 || lap % 5 !== 0) {
+    return;
+  }
+
+  const pending = await prisma.pitWallPrediction.findMany({
+    where: {
+      eventId,
+      outcome: "PENDING"
+    }
+  });
+
+  if (pending.length === 0) {
+    return;
+  }
+
+  await prisma.$transaction(async (tx) => {
+    for (const prediction of pending) {
+      const seed = Number.parseInt(prediction.id.replaceAll("-", "").slice(0, 8), 16);
+      const isCorrect = Number.isFinite(seed) ? (seed + lap) % 2 === 0 : lap % 2 === 0;
+      const pointsAward = prediction.tokenCost === 2 ? 4 : 2;
+
+      await tx.pitWallPrediction.update({
+        where: { id: prediction.id },
+        data: {
+          outcome: isCorrect ? "CORRECT" : "INCORRECT",
+          resolvedAt: new Date()
+        }
+      });
+
+      if (isCorrect) {
+        await tx.scoreLedger.create({
+          data: {
+            teamId: prediction.teamId,
+            eventId,
+            points: pointsAward,
+            reason: `PITWALL_CORRECT_${prediction.predictionType}`
+          }
+        });
+      }
+    }
+  });
+
+  process.stdout.write(`[pitwall] resolved=${String(pending.length)} lap=${String(lap)} event=${eventId}\n`);
+};
+
 const applySettlement = async (eventId: string) => {
   if (settledEventIds.has(eventId)) {
     return;
@@ -73,6 +119,17 @@ const applySettlement = async (eventId: string) => {
       where: { id: eventId },
       data: { status: "FINAL" }
     });
+
+    await tx.pitWallPrediction.updateMany({
+      where: {
+        eventId,
+        outcome: "PENDING"
+      },
+      data: {
+        outcome: "INCORRECT",
+        resolvedAt: new Date()
+      }
+    });
   });
 
   settledEventIds.add(eventId);
@@ -87,6 +144,7 @@ const handleSimEvent = async (event: NormalizedEvent) => {
 
   await persistNormalizedEvent(event, sequence);
   await applyProvisionalTick(event.eventId, lap);
+  await resolvePendingPredictions(event.eventId, lap);
 
   process.stdout.write(`[sim-event] type=${event.type} lap=${String(lap)} event=${event.eventId}\n`);
 

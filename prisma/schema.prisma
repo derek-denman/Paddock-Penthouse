@@ -52,6 +52,12 @@ enum RosterSlot {
   RESERVE
 }
 
+enum PredictionOutcome {
+  PENDING
+  CORRECT
+  INCORRECT
+}
+
 model User {
   id             String             @id @default(uuid())
   email          String             @unique
@@ -117,6 +123,7 @@ model Event {
   preRacePicks      PreRacePick[]
   scoreLedgers      ScoreLedger[]
   normalizedEvents  NormalizedRaceEvent[]
+  pitWallPredictions PitWallPrediction[]
 }
 
 model PlayerTeam {
@@ -136,6 +143,7 @@ model PlayerTeam {
   rosterSubmissions RosterSubmission[]
   preRacePicks      PreRacePick[]
   scoreLedgers      ScoreLedger[]
+  pitWallPredictions PitWallPrediction[]
 
   @@unique([leagueId, userId])
 }
@@ -245,4 +253,19 @@ model NormalizedRaceEvent {
   event     Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
 
   @@unique([eventId, sequence])
+}
+
+model PitWallPrediction {
+  id             String            @id @default(uuid())
+  teamId         String
+  eventId        String
+  predictionType String
+  target         String
+  tokenCost      Int               @default(1)
+  outcome        PredictionOutcome @default(PENDING)
+  resolvedAt     DateTime?
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+  team           PlayerTeam        @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  event          Event             @relation(fields: [eventId], references: [id], onDelete: Cascade)
 }
