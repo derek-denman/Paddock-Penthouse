@@ -8,6 +8,7 @@ import { DashboardPage } from "./pages/DashboardPage";
 import { LandingPage } from "./pages/LandingPage";
 import { LeaguePage } from "./pages/LeaguePage";
 import { LoginPage } from "./pages/LoginPage";
+import { RaceWeekendPage } from "./pages/RaceWeekendPage";
 import { TeamPage } from "./pages/TeamPage";
 
 const queryClient = new QueryClient();
@@ -52,6 +53,7 @@ const AppRoutes = () => {
       />
       <Route path="/league" element={user ? <LeaguePage /> : <Navigate to="/login" replace />} />
       <Route path="/team" element={user ? <TeamPage /> : <Navigate to="/login" replace />} />
+      <Route path="/race-weekend" element={user ? <RaceWeekendPage /> : <Navigate to="/login" replace />} />
     </Routes>
   );
 };

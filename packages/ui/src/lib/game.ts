@@ -81,12 +81,66 @@ export type TeamDetail = {
   }>;
 };
 
+export type EventSummary = {
+  id: string;
+  key: string;
+  name: string;
+  status: "SCHEDULED" | "LIVE" | "FINAL";
+  startsAt: string;
+  isCrownJewel: boolean;
+  season: {
+    id: string;
+    key: string;
+    name: string;
+    year: number;
+    series: string;
+  };
+};
+
 export const fetchPlayerState = async (): Promise<PlayerState> => {
   const response = await fetch(`${appConfig.apiOrigin}/player/state`, {
     headers: authHeaders()
   });
 
   return parseResponse<PlayerState>(response);
+};
+
+export const fetchEvents = async (): Promise<EventSummary[]> => {
+  const response = await fetch(`${appConfig.apiOrigin}/events`, {
+    headers: authHeaders()
+  });
+
+  const payload = await parseResponse<{ events: EventSummary[] }>(response);
+  return payload.events;
+};
+
+export const submitRoster = async (
+  teamId: string,
+  eventId: string,
+  salaryCap: number,
+  items: Array<{ slot: "STARTER" | "BENCH" | "RESERVE"; driverName: string; salary: number }>
+) => {
+  const response = await fetch(`${appConfig.apiOrigin}/player/roster/submit`, {
+    method: "POST",
+    headers: authHeaders(),
+    body: JSON.stringify({ teamId, eventId, salaryCap, items })
+  });
+
+  return parseResponse(response);
+};
+
+export const submitPicks = async (
+  teamId: string,
+  eventId: string,
+  picks: Array<{ pickType: string; pickValue: string; confidence: number }>
+) => {
+  const response = await fetch(`${appConfig.apiOrigin}/player/picks/submit`, {
+    method: "POST",
+    headers: authHeaders(),
+    body: JSON.stringify({ teamId, eventId, picks })
+  });
+
+  return parseResponse(response);
 };
 
 export const createLeague = async (name: string, code: string) => {
