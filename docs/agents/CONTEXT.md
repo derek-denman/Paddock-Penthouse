@@ -21,6 +21,7 @@ Milestone 4: race weekend roster submission and pre-race picks are implemented w
 Milestone 5: live pit-wall view and prediction loop are implemented with SSE snapshots and strategy-token spend/resolve flow.
 Milestone 6: Team AI Console is implemented with per-user chat history, local deterministic assistant, optional OpenAI path, and action guardrails.
 Milestone 7: infra is expanded to a multi-stack CDK baseline (network/data/auth/compute/web/observability) for AWS deployment.
+Milestone 8: F1 provider is integrated behind live-mode flags with health checks and automatic SIM fallback; other series provider stubs exist.
 
 ## Operational Defaults
 - App should run locally even without cloud credentials.
