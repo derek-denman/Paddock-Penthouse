@@ -47,7 +47,10 @@ const AppRoutes = () => {
   return (
     <Routes>
       <Route path="/" element={<LandingPage user={user} />} />
-      <Route path="/login" element={<LoginPage onLoginComplete={restoreSession} />} />
+      <Route
+        path="/login"
+        element={user ? <Navigate to="/dashboard" replace /> : <LoginPage onLoginComplete={restoreSession} />}
+      />
       <Route path="/auth/callback" element={<AuthCallbackPage onLoginComplete={restoreSession} />} />
       <Route
         path="/dashboard"
