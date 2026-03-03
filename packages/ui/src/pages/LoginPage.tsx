@@ -1,5 +1,5 @@
 import { FormEvent, useState } from "react";
-import { Button, Container, Form, Header, Message, Segment } from "semantic-ui-react";
+import { useNavigate } from "react-router-dom";
 
 import { beginCognitoGoogleLogin, loginLocal } from "../lib/auth";
 import { appConfig } from "../lib/config";
@@ -9,6 +9,7 @@ type LoginPageProps = {
 };
 
 export const LoginPage = ({ onLoginComplete }: LoginPageProps) => {
+  const navigate = useNavigate();
   const [email, setEmail] = useState("owner@example.com");
   const [displayName, setDisplayName] = useState("Local Player");
   const [error, setError] = useState<string | null>(null);
@@ -22,6 +23,7 @@ export const LoginPage = ({ onLoginComplete }: LoginPageProps) => {
     try {
       await loginLocal(email, displayName);
       await onLoginComplete();
+      navigate("/dashboard", { replace: true });
     } catch (loginError) {
       setError(loginError instanceof Error ? loginError.message : "Local login failed");
     } finally {
@@ -38,36 +40,45 @@ export const LoginPage = ({ onLoginComplete }: LoginPageProps) => {
   };
 
   return (
-    <Container text style={{ marginTop: "4rem" }}>
-      <Segment padded="very" raised>
-        <Header as="h2">Sign in to Paddock to Penthouse</Header>
+    <div className="ui text container" style={{ marginTop: "4rem" }}>
+      <div className="ui very padded raised segment">
+        <h2 className="ui header">Sign in to Paddock to Penthouse</h2>
         <p>Use Google via Cognito in cloud environments, or local auth for development.</p>
 
-        {error && <Message negative>{error}</Message>}
+        {error ? <div className="ui negative message">{error}</div> : null}
 
         {appConfig.authMode === "cognito" ? (
-          <Button color="google plus" onClick={handleGoogleLogin} icon="google" content="Continue with Google" />
+          <button type="button" className="ui google plus button" onClick={handleGoogleLogin}>
+            <i className="google icon" />
+            Continue with Google
+          </button>
         ) : (
-          <Form onSubmit={handleLocalLogin}>
-            <Form.Input
-              required
-              label="Email"
-              type="email"
-              value={email}
-              onChange={(event) => setEmail(event.target.value)}
-            />
-            <Form.Input
-              required
-              label="Display Name"
-              value={displayName}
-              onChange={(event) => setDisplayName(event.target.value)}
-            />
-            <Button type="submit" color="orange" loading={loading}>
+          <form className={`ui form ${loading ? "loading" : ""}`} onSubmit={handleLocalLogin}>
+            <div className="field">
+              <label htmlFor="login-email">Email</label>
+              <input
+                id="login-email"
+                required
+                type="email"
+                value={email}
+                onChange={(event) => setEmail(event.target.value)}
+              />
+            </div>
+            <div className="field">
+              <label htmlFor="login-display-name">Display Name</label>
+              <input
+                id="login-display-name"
+                required
+                value={displayName}
+                onChange={(event) => setDisplayName(event.target.value)}
+              />
+            </div>
+            <button type="submit" className="ui orange button" disabled={loading}>
               Sign in (Local)
-            </Button>
-          </Form>
+            </button>
+          </form>
         )}
-      </Segment>
-    </Container>
+      </div>
+    </div>
   );
 };

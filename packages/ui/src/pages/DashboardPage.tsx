@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
-import { Button, Container, Grid, Header, Label, Segment } from "semantic-ui-react";
+import { Container, Grid, Header, Label, Segment } from "semantic-ui-react";
 
 import type { SessionUser } from "../lib/auth";
 import { fetchPlayerState } from "../lib/game";
@@ -25,26 +25,26 @@ export const DashboardPage = ({ user, onLogout }: DashboardPageProps) => {
             <p>{user.email}</p>
             <Label color={user.role === "ADMIN" ? "red" : "blue"}>{user.role}</Label>
             <div style={{ marginTop: "1rem" }}>
-              <Button as={Link} to="/league" color="orange" style={{ marginRight: "0.5rem" }}>
+              <Link className="ui orange button" to="/league" style={{ marginRight: "0.5rem" }}>
                 Leagues
-              </Button>
-              <Button as={Link} to="/team" color="teal">
+              </Link>
+              <Link className="ui teal button" to="/team">
                 Team Management
-              </Button>
-              <Button as={Link} to="/race-weekend" color="blue" style={{ marginLeft: "0.5rem" }}>
+              </Link>
+              <Link className="ui blue button" to="/race-weekend" style={{ marginLeft: "0.5rem" }}>
                 Race Weekend
-              </Button>
-              <Button as={Link} to="/live" color="black" style={{ marginLeft: "0.5rem" }}>
+              </Link>
+              <Link className="ui black button" to="/live" style={{ marginLeft: "0.5rem" }}>
                 Live Pit Wall
-              </Button>
-              <Button as={Link} to="/ai-console" color="orange" style={{ marginLeft: "0.5rem" }}>
+              </Link>
+              <Link className="ui orange button" to="/ai-console" style={{ marginLeft: "0.5rem" }}>
                 Team AI Console
-              </Button>
+              </Link>
             </div>
             <div style={{ marginTop: "1rem" }}>
-              <Button basic color="orange" onClick={onLogout}>
+              <button type="button" className="ui basic orange button" onClick={onLogout}>
                 Sign out
-              </Button>
+              </button>
             </div>
           </Segment>
         </Grid.Column>
